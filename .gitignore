@@ -1,0 +1,10 @@
+.vs/
+EnemyAI/Debug/
+
+*.obj
+*.idb
+*.pdb
+*.tlog
+*.lastbuildstage
+*.pch
+*.log

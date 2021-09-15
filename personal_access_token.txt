@@ -1,0 +1,3 @@
+Git personal access token
+
+	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
