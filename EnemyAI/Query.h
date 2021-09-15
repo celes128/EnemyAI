@@ -27,7 +27,7 @@ public:
 	}
 
 	template <class UnaryPredicate>
-	static Result RandomEntityIf(IN Party &party, IN UnaryPredicate predicate, OUT Entity **entity)
+	static Result RandomEntityWith(IN Party &party, IN UnaryPredicate predicate, OUT Entity **entity)
 	{
 		assert(entity);
 

@@ -3,6 +3,7 @@
 
 #include "framework.h"
 #include "utils.h"
+#include "stratutils.h"
 #include "Bank.h"
 #include "Spell.h"
 #include "EventSystem.h"
@@ -47,7 +48,7 @@ static void initialize()
 
 	s_console = std::make_shared<ConsoleOutput>(&s_eventSystem);
 
-	result = ok(strat::Initialize(&s_spellDataBank));
+	result = ok(stratutils::Initialize(&s_spellDataBank));
 	assert(result);
 
 	create_spell_data_bank();
@@ -57,7 +58,7 @@ static void initialize()
 
 static void quit()
 {
-	strat::Quit();
+	stratutils::Quit();
 }
 
 static void create_spell_data_bank()

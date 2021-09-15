@@ -13,9 +13,6 @@ struct Action;
 struct strat {
 	strat() = delete;
 
-	static Result Initialize(Bank<SpellData> *spellbank);
-	static void Quit();
-
 	static Result ChooseAction(
 		IN STRATEGYNAME strat,
 		IN Entity &entity,

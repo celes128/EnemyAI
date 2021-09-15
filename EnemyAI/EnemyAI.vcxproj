@@ -166,10 +166,13 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="EventSystem.cpp" />
     <ClCompile Include="Query.cpp" />
+    <ClCompile Include="ReadyEntityInfo.cpp" />
     <ClCompile Include="ReadyList.cpp" />
     <ClCompile Include="Resource.cpp" />
     <ClCompile Include="Spell.cpp" />
     <ClCompile Include="SpellInstance.cpp" />
+    <ClCompile Include="stratutils.cpp" />
+    <ClCompile Include="strat_offensive.cpp" />
     <ClCompile Include="TargetingData.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
@@ -190,11 +193,14 @@
     <ClInclude Include="MagicSchool.h" />
     <ClInclude Include="Party.h" />
     <ClInclude Include="Query.h" />
+    <ClInclude Include="ReadyEntityInfo.h" />
     <ClInclude Include="ReadyList.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="Spell.h" />
     <ClInclude Include="SpellInstance.h" />
     <ClInclude Include="StrateyName.h" />
+    <ClInclude Include="stratutils.h" />
+    <ClInclude Include="strat_offensive.h" />
     <ClInclude Include="TargetingData.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
