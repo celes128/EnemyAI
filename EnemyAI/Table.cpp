@@ -76,6 +76,7 @@ void Table::print_row(size_t i) const
 	std::cout << "|";
 	for (size_t c = 0; c < m_columnInfos.size(); c++) {
 		if (c < row.NumColumns()) {
+			// Column left padding
 			std::cout << kLeftPadStr;
 
 			// Center the entry text
@@ -91,12 +92,13 @@ void Table::print_row(size_t i) const
 				std::cout << e.text;
 			}
 			else {
-				WinCons::color_printf(e.textColor, WinCons::INTENSIFY, "%s", e.text.c_str());
+				WinCons::color_printf(e.textColor, WinCons::DO_NOT_INTENSIFY, "%s", e.text.c_str());
 			}
 
 			// Right whitespaces
 			std::cout << std::string(nBlanks - nBlanks / 2, ' ');
 
+			// Column right padding
 			std::cout << kRightPadStr;
 		}
 		else {

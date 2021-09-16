@@ -24,6 +24,7 @@ static void initialize();
 static void quit();
 static void create_spell_data_bank();
 static void create_entities_and_parties();
+static void create_console_output();
 
 int main()
 {
@@ -46,15 +47,14 @@ static void initialize()
 {
 	Result result;
 
-	result = ok(stratutils::Initialize(&s_spellDataBank));
-	assert(result);
+	result = stratutils::Initialize(&s_spellDataBank);
+	assert(ok(result));
 
 	create_spell_data_bank();
 
 	create_entities_and_parties();
 
-	const std::vector<const Party *> parties{ {&s_party1, &s_party2} };
-	s_console = std::make_shared<ConsoleOutput>(&s_eventSystem, parties);
+	create_console_output();	
 }
 
 static void quit()
@@ -140,4 +140,10 @@ static void create_entities_and_parties()
 
 	// Test
 	//kill_entity(s_party2[0]);
+}
+
+static void create_console_output()
+{
+	const std::vector<const Party *> parties{ {&s_party1, &s_party2} };
+	s_console = std::make_shared<ConsoleOutput>(&s_eventSystem, parties);
 }
