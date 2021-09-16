@@ -25,4 +25,18 @@ private:
 		* action.type == Action::Type::None
 	*/
 	void process_action_none(Action action);
+
+	/*
+		PRECONDITIONS
+		* caster != nullptr
+	*/
+	void process_spell(const SpellData &spell, Entity *caster, std::vector<Entity *> &targets);
+
+	void process_spell_effect(const SpellEffect &effect, Entity *caster, Entity *target);
+
+	/*
+		PRECONDITIONS
+		* effect.type == SpellEffect::Type::ModifyResource
+	*/
+	void process_spell_effect_resource(const SpellEffect &effect, Entity *caster, Entity *target);
 };

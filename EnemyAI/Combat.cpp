@@ -20,11 +20,13 @@ ICombatState::ICombatState(Combat *combat)
 
 Combat::Combat(
 	EventSystem *eventSystem,
+	Bank<SpellData> *spellBank,
 	Party *party1,
 	Party *party2
 )
 	:
 	m_eventSystem(eventSystem),
+	m_spellBank(spellBank),
 	m_parties{{party1, party2}},
 	m_states(COMBATSTATE_COUNT, nullptr)
 {

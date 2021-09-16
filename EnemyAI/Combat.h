@@ -4,6 +4,8 @@
 
 #include "ReadyList.h"
 #include "Party.h"
+#include "Bank.h"
+#include "Spell.h"
 
 class Entity;
 class EventSystem;
@@ -39,6 +41,7 @@ public:
 
 	Combat(
 		EventSystem *eventSystem,
+		Bank<SpellData> *spellBank,
 		Party *party1,
 		Party *party2
 	);
@@ -73,14 +76,16 @@ private:
 	Result find_entity_from_id(IN uint id, OUT Entity **entity);
 
 private:
-	EventSystem								*m_eventSystem;
-	std::vector<Party *>					m_parties;
+	EventSystem							*m_eventSystem;
+	Bank<SpellData>						*m_spellBank;
 
-	std::vector<ICombatState *>				m_states;
+	std::vector<Party *>				m_parties;
+
+	std::vector<ICombatState *>			m_states;
 	
-	COMBATSTATE								m_currentState;
+	COMBATSTATE							m_currentState;
 
-	ReadyList								m_readyList;
+	ReadyList							m_readyList;
 };
 
 bool dead_party(const Party *party);

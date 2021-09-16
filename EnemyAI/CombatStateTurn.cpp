@@ -55,22 +55,33 @@ void CombatStateTurn::process_action_spellcast(Action action)
 {
 	assert(Action::Type::SpellCast == action.type);
 
-	Entity *caster;
-	auto result = m_combat->find_entity_from_id(IN action.caster, OUT &caster);
-	if (failed(result))
-		return;
+	Result result;
 
-	for (auto &id: action.targets) {
+	// Get the spell data from the bank
+	const SpellData *spell;
+	result = m_combat->m_spellBank->Find(IN action.asSpellCast.spellId, &spell);
+	if (failed(result)) {
+		return;
+	}
+
+	// Get the caster
+	Entity *caster;
+	result = m_combat->find_entity_from_id(IN action.caster, OUT &caster);
+	if (failed(result)) {
+		return;
+	}
+
+	// Get the targets
+	std::vector<Entity *> targets;
+	for (auto &id : action.targets) {
 		Entity *target;
 		result = m_combat->find_entity_from_id(IN id, OUT &target);
-		if (failed(result))
-			continue;
-
-		auto ev = Event::MakeSpellCast(action.asSpellCast.spellId, caster, target);
-		m_combat->m_eventSystem->PostEvent(ev);
-
-		// TODO: process each spell effect
+		if (ok(result)) {
+			targets.push_back(target);
+		}
 	}
+
+	process_spell(*spell, caster, targets);
 
 	caster->TriggerSpellCooldown(action.asSpellCast.spellId);
 }
@@ -86,4 +97,73 @@ void CombatStateTurn::process_action_none(Action action)
 
 	auto ev = Event::MakeActionNone(caster);
 	m_combat->m_eventSystem->PostEvent(ev);
+}
+
+void CombatStateTurn::process_spell(const SpellData &spell, Entity *caster, std::vector<Entity *> &targets)
+{
+	for (auto &effect : spell.effects) {
+		for (auto &target : targets) {
+			m_combat->m_eventSystem->PostEvent(Event::MakeSpellCast(spell.id, caster, target));
+
+			process_spell_effect(effect, caster, target);
+		}
+	}
+}
+
+void CombatStateTurn::process_spell_effect(const SpellEffect &effect, Entity *caster, Entity *target)
+{
+	using T = SpellEffect::Type;
+
+	switch (effect.type) {
+	case T::ModifyResource: process_spell_effect_resource(effect, caster, target); break;
+	case T::None: break;
+	}
+}
+
+void CombatStateTurn::process_spell_effect_resource(const SpellEffect &effect, Entity *caster, Entity *target)
+{
+	assert(SpellEffect::Type::ModifyResource == effect.type);
+
+	const auto &fx = effect.asResource;
+
+	switch (fx.resource) {
+	case Resource::HP: {
+		// TODO:
+		//	Replace this identity function by one that takes into account
+		//	the caster and the target attributes: spell power, attack power, armor, magic resistance...
+		int amount = static_cast<int>(fx.potency);
+
+		if (RESOURCE_MODIF_TYPE_DAMAGE == fx.modifType) {
+			if (amount > 0) {
+				amount *= -1;
+			}
+		}
+		else if (RESOURCE_MODIF_TYPE_HEAL == fx.modifType) {
+			if (amount < 0) {
+				amount *= -1;
+			}
+		}
+		else if (RESOURCE_MODIF_TYPE_STEAL == fx.modifType) {
+			// TODO
+		}
+		else if (RESOURCE_MODIF_TYPE_EXPLODE == fx.modifType) {
+			// TODO
+		}
+		else {
+			assert(false && "Unknown RESOURCE_MODIF_TYPE");
+		}
+
+		int before, after;
+		target->AddHP(amount, HEALING_EXTRAINFO_DOES_NOT_REVIVE, &before, &after);
+		
+		m_combat->m_eventSystem->PostEvent(Event::MakeModifHP(after-before, caster, target));
+	}break;
+
+	case Resource::MP: {
+		// TODO
+	}break;
+
+	default:
+		break;
+	}
 }

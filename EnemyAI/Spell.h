@@ -7,6 +7,13 @@
 #include "MagicSchool.h"
 #include "TargetingData.h"
 
+enum RESOURCE_MODIF_TYPE {
+	RESOURCE_MODIF_TYPE_DAMAGE,
+	RESOURCE_MODIF_TYPE_HEAL,
+	RESOURCE_MODIF_TYPE_STEAL,
+	RESOURCE_MODIF_TYPE_EXPLODE
+};
+
 struct SpellEffect {
 	enum Type {
 		None,
@@ -20,13 +27,14 @@ struct SpellEffect {
 	struct AsResource {
 		Resource			resource;
 		uint				potency;
+		RESOURCE_MODIF_TYPE	modifType;
 	};
 
 	union {
 		AsResource			asResource;
 	};
 
-	static SpellEffect MakeModifyResource(Resource resource, uint potency, MagicSchool school = MagicSchool::None)
+	static SpellEffect MakeModifyResource(Resource resource, uint potency, RESOURCE_MODIF_TYPE modifType, MagicSchool school = MagicSchool::None)
 	{
 		SpellEffect fx;
 
@@ -35,6 +43,7 @@ struct SpellEffect {
 
 		fx.asResource.resource = resource;
 		fx.asResource.potency = potency;
+		fx.asResource.modifType = modifType;
 
 		return fx;
 	}

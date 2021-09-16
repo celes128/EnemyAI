@@ -10,6 +10,8 @@ static bool valid_strategy(STRATEGYNAME strat)
 	return 0 <= strat && strat < STRATEGYNAME_COUNT;
 }
 
+using StrategyFunc = Result(*)(IN ReadyEntityInfo &rei, OUT Action *action);
+
 static StrategyFunc s_strategies[STRATEGYNAME_COUNT] =
 {
 	strat_offensive,

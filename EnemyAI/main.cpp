@@ -29,7 +29,7 @@ int main()
 {
 	initialize();
 
-	Combat combat(&s_eventSystem, &s_party1, &s_party2);
+	Combat combat(&s_eventSystem, &s_spellDataBank, &s_party1, &s_party2);
 
 	while (!combat.Over()) {
 		combat.Update();
@@ -68,7 +68,7 @@ static void create_spell_data_bank()
 
 	// Spell: Attack
 	spell.effects = {
-		SpellEffect::MakeModifyResource(Resource::HP, 6, MagicSchool::Physical)
+		SpellEffect::MakeModifyResource(Resource::HP, 6, RESOURCE_MODIF_TYPE_DAMAGE, MagicSchool::Physical)
 	};
 	spell.targetingData = TargetingData(fTarAlly|fTarOpponent|fTarEntity|fTarDefaultOpponent);
 	spell.cooldown = 1;
@@ -76,7 +76,7 @@ static void create_spell_data_bank()
 
 	// Spell: Fire
 	spell.effects = {
-		SpellEffect::MakeModifyResource(Resource::HP, 6, MagicSchool::Fire)
+		SpellEffect::MakeModifyResource(Resource::HP, 6, RESOURCE_MODIF_TYPE_DAMAGE, MagicSchool::Fire)
 	};
 	spell.targetingData = TargetingData(fTarAlly|fTarOpponent|fTarEntity|fTarParty|fTarDefaultOpponent);
 	spell.cooldown = 1;
