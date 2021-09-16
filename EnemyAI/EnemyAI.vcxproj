@@ -205,6 +205,7 @@
     <ClInclude Include="strat_offensive.h" />
     <ClInclude Include="TargetingData.h" />
     <ClInclude Include="utils.h" />
+    <ClInclude Include="wincons.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

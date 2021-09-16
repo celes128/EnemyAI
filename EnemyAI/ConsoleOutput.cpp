@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Entity.h"
+#include "wincons.h"
 
 ConsoleOutput::ConsoleOutput(EventSystem *eventSystem)
 {
@@ -47,10 +48,12 @@ void ConsoleOutput::handle_event(const Event &e)
 	}break;
 
 	case T::Death: {
-		cout << e.asDeath.killer->Name() << " has killed "
-			<< e.asDeath.victim->Name()
-			<< " (" << e.asDeath.hpAmount << " damage)."
-			<< endl;
+		WinCons::color_printf(
+			WinCons::Color::Red,
+			WinCons::INTENSIFY,
+			"%s has killed %s (%d damage).\n",
+			e.asDeath.killer->Name().c_str(), e.asDeath.victim->Name().c_str(), e.asDeath.hpAmount
+		);
 	}break;
 
 	case T::SpellCast: {
