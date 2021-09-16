@@ -8,4 +8,4 @@ A prototype project for testing combat AIs in an RPG.
 - React (not implemented)
 
 ## Party Status Frame
-<img src="https://github.com/celes128/EnemyAI/blob/master/partystatusframe1.PNG" style="width: 25%; height: 25%"/>
+<img src="https://github.com/celes128/EnemyAI/blob/master/partystatusframe1.PNG" style="width: 40%; height: 40%"/>
