@@ -79,16 +79,23 @@ void Table::print_row(size_t i) const
 			std::cout << kLeftPadStr;
 
 			// Center the entry text
-			int nWhitespaces = m_columnInfos[c].width - (m_layout.colLeftPad + m_layout.colRightPad + row.entries[c].text.size());
-			assert(nWhitespaces >= 0);
+			int nBlanks = m_columnInfos[c].width - (m_layout.colLeftPad + m_layout.colRightPad + row.entries[c].text.size());
+			assert(nBlanks >= 0);
 			
 			// Left whitespaces
-			std::cout << std::string(nWhitespaces / 2, ' ');
+			std::cout << std::string(nBlanks / 2, ' ');
 
-			std::cout << row.entries[c].text;
+			// Entry text
+			const auto &e = row.entries[c];
+			if (e.ignoreTextColor) {
+				std::cout << e.text;
+			}
+			else {
+				WinCons::color_printf(e.textColor, WinCons::INTENSIFY, "%s", e.text.c_str());
+			}
 
 			// Right whitespaces
-			std::cout << std::string(nWhitespaces - nWhitespaces / 2, ' ');
+			std::cout << std::string(nBlanks - nBlanks / 2, ' ');
 
 			std::cout << kRightPadStr;
 		}

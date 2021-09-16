@@ -31,9 +31,11 @@ void PartyStatusFrame::create_table()
 		for (auto &entity : *party) {
 			std::string hpStr = std::to_string(entity->HP()) + "/" + std::to_string(entity->MaxHP());
 
+			auto color = entity->Alive() ? WinCons::Color::Green : WinCons::Color::Red;
+
 			rows.push_back(
 				TableRow{
-					{ {TableRowEntry(entity->Name()), TableRowEntry(hpStr) }}
+					{ {TableRowEntry(entity->Name(), color), TableRowEntry(hpStr, color) }}
 				}
 			);
 		}
