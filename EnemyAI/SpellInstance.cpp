@@ -2,10 +2,9 @@
 
 #include <algorithm>
 
-SpellInstance::SpellInstance(uint spellId, uint cooldown)
+SpellInstance::SpellInstance(uint spellId)
 	:
 	m_id(spellId),
-	m_originalCooldown(cooldown),
 	m_remainingCooldown(0)
 {}
 

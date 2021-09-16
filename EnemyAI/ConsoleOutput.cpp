@@ -46,6 +46,13 @@ void ConsoleOutput::handle_event(const Event &e)
 			<< endl;
 	}break;
 
+	case T::Death: {
+		cout << e.asDeath.killer->Name() << " has killed "
+			<< e.asDeath.victim->Name()
+			<< " (" << e.asDeath.hpAmount << " damage)."
+			<< endl;
+	}break;
+
 	case T::SpellCast: {
 		cout << "Spell (id=" << e.asSpellCast.spellId << ")"
 			<< " casted by " << e.asSpellCast.caster->Name()

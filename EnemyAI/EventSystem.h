@@ -19,6 +19,8 @@ struct Event {
 		SpellCast,
 		ModifHP,
 
+		Death,
+
 		ActionNone,
 
 		Count
@@ -38,6 +40,12 @@ struct Event {
 		Entity		*target;
 	};
 
+	struct AsDeath {
+		Entity		*victim;
+		Entity		*killer;
+		int			hpAmount;
+	};
+
 	struct AsActionNone {
 		Entity		*caster;
 	};
@@ -45,6 +53,7 @@ struct Event {
 	union {
 		AsSpellCast		asSpellCast;
 		AsModifHP		asModifHP;
+		AsDeath			asDeath;
 		AsActionNone	asActionNone;
 	};
 
@@ -75,6 +84,19 @@ struct Event {
 		e.asModifHP.amount = amount;
 		e.asModifHP.caster = caster;
 		e.asModifHP.target = target;
+
+		return e;
+	}
+
+	static Event MakeDeath(Entity *victim, Entity *killer, int hpAmount)
+	{
+		Event e;
+
+		e.type = Type::Death;
+
+		e.asDeath.victim = victim;
+		e.asDeath.killer = killer;
+		e.asDeath.hpAmount = hpAmount;
 
 		return e;
 	}

@@ -9,19 +9,18 @@
 */
 class SpellInstance {
 public:
-	SpellInstance(uint spellId, uint cooldown);
+	SpellInstance(uint spellId);
 
 	auto Id() const { return m_id; }
 	auto RemainingCooldown() const { return m_remainingCooldown; }
 	auto Ready() const { return 0 == m_remainingCooldown; }
 	
-	void TriggerCooldown() { m_remainingCooldown = m_originalCooldown; }
+	void TriggerCooldown(uint cooldown) { m_remainingCooldown = cooldown; }
 
 	void AdvanceCooldown(uint numTurns = 1);
 private:
 	uint		m_id;
 
 	// Cooldowns are expressed in number of turns.
-	uint		m_originalCooldown;
 	uint		m_remainingCooldown;
 };

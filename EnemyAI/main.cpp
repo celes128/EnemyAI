@@ -71,7 +71,7 @@ static void create_spell_data_bank()
 		SpellEffect::MakeModifyResource(Resource::HP, 6, RESOURCE_MODIF_TYPE_DAMAGE, MagicSchool::Physical)
 	};
 	spell.targetingData = TargetingData(fTarAlly|fTarOpponent|fTarEntity|fTarDefaultOpponent);
-	spell.cooldown = 1;
+	spell.cooldown = 0;
 	assert(ok(s_spellDataBank.Insert(spell, "Attack", &id)));
 
 	// Spell: Fire
@@ -79,8 +79,16 @@ static void create_spell_data_bank()
 		SpellEffect::MakeModifyResource(Resource::HP, 6, RESOURCE_MODIF_TYPE_DAMAGE, MagicSchool::Fire)
 	};
 	spell.targetingData = TargetingData(fTarAlly|fTarOpponent|fTarEntity|fTarParty|fTarDefaultOpponent);
-	spell.cooldown = 1;
+	spell.cooldown = 0;
 	assert(ok(s_spellDataBank.Insert(spell, "Fire", &id)));
+
+	// Spell: Cure
+	spell.effects = {
+		SpellEffect::MakeModifyResource(Resource::HP, 6, RESOURCE_MODIF_TYPE_HEAL, MagicSchool::Light)
+	};
+	spell.targetingData = TargetingData(fTarAlly | fTarOpponent | fTarEntity | fTarParty | fTarDefaultAlly);
+	spell.cooldown = 0;
+	assert(ok(s_spellDataBank.Insert(spell, "Cure", &id)));
 
 	// Add other spells here...
 }
@@ -93,12 +101,27 @@ static uint new_entity_id()
 
 static void create_entities_and_parties()
 {
+	Result result;
+
 	// We'll use the same simple ai for all entities for now.
 	AIData ai{ { STRATEGYNAME_OFFENSIVE }, 1 };
 
+	uint idFire;
+	result = s_spellDataBank.IdFromName(IN "Fire", OUT &idFire);
+	assert(ok(result));
+
+	uint idAttack;
+	result = s_spellDataBank.IdFromName(IN "Attack", OUT &idAttack);
+	assert(ok(result));
+
+	uint idCure;
+	result = s_spellDataBank.IdFromName(IN "Cure", OUT &idCure);
+	assert(ok(result));
+
 	std::vector<SpellInstance> spells = {
-		SpellInstance(0, 1),
-		SpellInstance(1, 1)
+		SpellInstance(idAttack),
+		SpellInstance(idFire),
+		SpellInstance(idCure)
 	};
 
 	s_entities.push_back(Entity("Warrior", new_entity_id(), 80, ai, spells));

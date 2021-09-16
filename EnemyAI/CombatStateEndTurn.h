@@ -8,4 +8,8 @@ public:
 
 	void OnEnter() override;
 	void Update() override;
+
+private:
+	void tick_buffs();
+	void advance_spell_cooldowns();
 };

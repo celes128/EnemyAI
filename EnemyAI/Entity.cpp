@@ -46,7 +46,7 @@ void Entity::AddHP(int amount, HEALING_EXTRAINFO healExtraInfo, int *before, int
 	}
 }
 
-void Entity::TriggerSpellCooldown(uint spell)
+void Entity::TriggerSpellCooldown(uint spell, uint cooldown)
 {
 	auto it = std::find_if(
 		m_spellInstances.begin(),
@@ -54,7 +54,14 @@ void Entity::TriggerSpellCooldown(uint spell)
 		[spell](const SpellInstance cur) { return cur.Id() == spell; }
 	);
 	if (it != m_spellInstances.end()) {
-		it->TriggerCooldown();
+		it->TriggerCooldown(cooldown);
+	}
+}
+
+void Entity::AdvanceAllSpellCooldowns()
+{
+	for (auto &spell : m_spellInstances) {
+		spell.AdvanceCooldown();
 	}
 }
 

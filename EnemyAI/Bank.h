@@ -80,6 +80,26 @@ public:
 		return kFailure;
 	}
 
+	/*
+		PRECONDITIONS
+		* id != nullptr
+		RETURN VALUE
+		Returns kSuccess if the name corresponds to an item in the bank else kFailure.
+		In case of success, the function returns the item id using the OUT parameter.
+	*/
+	Result IdFromName(IN const char *name, OUT uint *id)
+	{
+		assert(id);
+
+		auto it = m_mapNamesToIds.find(name);
+		if (it != m_mapNamesToIds.end()) {
+			*id = it->second;
+			return kSuccess;
+		}
+
+		return kFailure;
+	}
+
 private:
 	std::vector<T>								m_items;
 	std::unordered_map<std::string, uint>		m_mapNamesToIds;

@@ -7,6 +7,26 @@
 
 static Bank<SpellData> *s_spellbank;
 
+static bool offensive_spell(const SpellData *spell)
+{
+	for (auto &effect : spell->effects) {
+		if (SpellEffect::Type::ModifyResource == effect.type) {
+			switch (effect.asResource.modifType) {
+			case RESOURCE_MODIF_TYPE_DAMAGE:
+			case RESOURCE_MODIF_TYPE_STEAL:
+			case RESOURCE_MODIF_TYPE_EXPLODE:
+				return true;
+				break;
+
+			default:
+				break;
+			}
+		}
+	}
+
+	return false;
+}
+
 Result stratutils::Initialize(Bank<SpellData> *spellbank)
 {
 	s_spellbank = spellbank;
@@ -70,6 +90,11 @@ Result stratutils::choose_offensive_action_entity(IN ReadyEntityInfo &rei, OUT A
 	auto candidateSpells = filter_spells(
 		readySpells,
 		[](const SpellData *spell) { return spell->targetingData.Flags(fTarEntity); }
+	);
+
+	candidateSpells = filter_spells(
+		candidateSpells,
+		[](const SpellData *spell) { return offensive_spell(spell); }
 	);
 
 	size_t i;

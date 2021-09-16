@@ -9,7 +9,8 @@ enum MagicSchool {
 	
 	Fire,
 	Ice,
-	Thunder
+	Light,
+	Thunder,
 };
 
 const int kNumMagicSchools = MagicSchool::Thunder + 1;

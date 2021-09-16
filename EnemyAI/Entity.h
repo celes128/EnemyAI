@@ -61,7 +61,9 @@ public:
 		int *after = nullptr
 	);
 
-	void TriggerSpellCooldown(uint spell);
+	void TriggerSpellCooldown(uint spell, uint cooldown);
+
+	void AdvanceAllSpellCooldowns();
 
 	/*
 		PRECONDITIONS

@@ -81,7 +81,7 @@ void CombatStateTurn::process_action_spellcast(Action action)
 
 	process_spell(*spell, caster, targets);
 
-	caster->TriggerSpellCooldown(action.asSpellCast.spellId);
+	caster->TriggerSpellCooldown(action.asSpellCast.spellId, spell->cooldown);
 }
 
 void CombatStateTurn::process_action_none(Action action)
@@ -159,6 +159,11 @@ void CombatStateTurn::process_spell_effect_resource(const SpellEffect &effect, E
 		auto variation = after - before;
 		if (variation != 0) {
 			m_combat->m_eventSystem->PostEvent(Event::MakeModifHP(variation, caster, target));
+		}
+
+		// Check for death
+		if (0 == after && variation < 0) {
+			m_combat->m_eventSystem->PostEvent(Event::MakeDeath(target, caster, -variation));
 		}
 	}break;
 
