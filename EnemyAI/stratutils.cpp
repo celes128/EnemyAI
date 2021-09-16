@@ -87,22 +87,22 @@ Result stratutils::choose_offensive_action_entity(IN ReadyEntityInfo &rei, OUT A
 	// Choosing the spell
 	auto readySpells = ready_spells(rei.entity);
 
-	auto candidateSpells = filter_spells(
+	auto spells = filter_spells(
 		readySpells,
 		[](const SpellData *spell) { return spell->targetingData.Flags(fTarEntity); }
 	);
 
-	candidateSpells = filter_spells(
-		candidateSpells,
+	spells = filter_spells(
+		spells,
 		[](const SpellData *spell) { return offensive_spell(spell); }
 	);
 
 	size_t i;
-	result = Query::RandomElement(IN candidateSpells, OUT &i);
+	result = Query::RandomElement(IN spells, OUT &i);
 	if (failed(result)) {
 		return kFailure;
 	}
-	const auto kChosenSpellId = candidateSpells[i]->id;
+	const auto kChosenSpellId = spells[i]->id;
 
 	// Choosing a target
 	Entity *target;

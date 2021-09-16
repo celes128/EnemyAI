@@ -69,7 +69,7 @@ static void create_spell_data_bank()
 
 	// Spell: Attack
 	spell.effects = {
-		SpellEffect::MakeModifyResource(Resource::HP, 6, RESOURCE_MODIF_TYPE_DAMAGE, MagicSchool::Physical)
+		SpellEffect::MakeModifyResource(Resource::HP, 3, RESOURCE_MODIF_TYPE_DAMAGE, MagicSchool::Physical)
 	};
 	spell.targetingData = TargetingData(fTarAlly|fTarOpponent|fTarEntity|fTarDefaultOpponent);
 	spell.cooldown = 0;
@@ -77,7 +77,7 @@ static void create_spell_data_bank()
 
 	// Spell: Fire
 	spell.effects = {
-		SpellEffect::MakeModifyResource(Resource::HP, 6, RESOURCE_MODIF_TYPE_DAMAGE, MagicSchool::Fire)
+		SpellEffect::MakeModifyResource(Resource::HP, 4, RESOURCE_MODIF_TYPE_DAMAGE, MagicSchool::Fire)
 	};
 	spell.targetingData = TargetingData(fTarAlly|fTarOpponent|fTarEntity|fTarParty|fTarDefaultOpponent);
 	spell.cooldown = 0;
@@ -128,6 +128,7 @@ static void create_entities_and_parties()
 	s_entities.push_back(Entity("Warrior", new_entity_id(), 80, ai, spells));
 	s_entities.push_back(Entity("Mage", new_entity_id(), 60, ai, spells));
 	s_entities.push_back(Entity("Skeleton", new_entity_id(), 10, ai, spells));
+	s_entities.push_back(Entity("Skeleton", new_entity_id(), 10, ai, spells));
 	s_entities.push_back(Entity("Wolf", new_entity_id(), 4, ai, spells));
 
 	s_party1.push_back(&s_entities[0]);
@@ -135,6 +136,7 @@ static void create_entities_and_parties()
 
 	s_party2.push_back(&s_entities[2]);
 	s_party2.push_back(&s_entities[3]);
+	s_party2.push_back(&s_entities[4]);
 
 	// Test
 	//kill_entity(s_party2[0]);

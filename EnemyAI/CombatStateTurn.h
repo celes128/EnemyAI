@@ -34,9 +34,11 @@ private:
 
 	void process_spell_effect(const SpellEffect &effect, Entity *caster, Entity *target);
 
+	void process_spell_effect_resource(const SpellEffect::AsResource &effect, Entity *caster, Entity *target);
+
 	/*
 		PRECONDITIONS
-		* effect.type == SpellEffect::Type::ModifyResource
+		* effect.asResource.resource == Resource::HP
 	*/
-	void process_spell_effect_resource(const SpellEffect &effect, Entity *caster, Entity *target);
+	void process_spell_effect_resource_hp(const SpellEffect::AsResource &effect, Entity *caster, Entity *target);
 };

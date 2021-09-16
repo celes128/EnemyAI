@@ -93,8 +93,7 @@ void CombatStateTurn::process_action_none(Action action)
 	if (failed(result))
 		return;
 
-	auto ev = Event::MakeActionNone(caster);
-	m_combat->m_eventSystem->PostEvent(ev);
+	m_combat->m_eventSystem->PostEvent(Event::MakeActionNone(caster));
 }
 
 void CombatStateTurn::process_spell(const SpellData &spell, Entity *caster, std::vector<Entity *> &targets)
@@ -115,63 +114,59 @@ void CombatStateTurn::process_spell_effect(const SpellEffect &effect, Entity *ca
 	using T = SpellEffect::Type;
 
 	switch (effect.type) {
-	case T::ModifyResource: process_spell_effect_resource(effect, caster, target); break;
+	case T::ModifyResource: process_spell_effect_resource(effect.asResource, caster, target); break;
 	case T::None: break;
 	}
 }
 
-void CombatStateTurn::process_spell_effect_resource(const SpellEffect &effect, Entity *caster, Entity *target)
+void CombatStateTurn::process_spell_effect_resource(const SpellEffect::AsResource &effect, Entity *caster, Entity *target)
 {
-	assert(SpellEffect::Type::ModifyResource == effect.type);
+	switch (effect.resource) {
+	case Resource::HP: process_spell_effect_resource_hp(effect, caster, target); break;
+	case Resource::MP: assert(false && "TODO"); break;
+	default: assert(false); break;
+	}
+}
 
-	const auto &fx = effect.asResource;
+void CombatStateTurn::process_spell_effect_resource_hp(const SpellEffect::AsResource &effect, Entity *caster, Entity *target)
+{
+	assert(Resource::HP == effect.resource);
 
-	switch (fx.resource) {
-	case Resource::HP: {
-		// TODO:
+	// TODO:
 		//	Replace this identity function by one that takes into account
 		//	the caster and the target attributes: spell power, attack power, armor, magic resistance...
-		int amount = static_cast<int>(fx.potency);
+	int amount = static_cast<int>(effect.potency);
 
-		if (RESOURCE_MODIF_TYPE_DAMAGE == fx.modifType) {
-			if (amount > 0) {
-				amount *= -1;
-			}
+	if (RESOURCE_MODIF_TYPE_DAMAGE == effect.modifType) {
+		if (amount > 0) {
+			amount *= -1;
 		}
-		else if (RESOURCE_MODIF_TYPE_HEAL == fx.modifType) {
-			if (amount < 0) {
-				amount *= -1;
-			}
+	}
+	else if (RESOURCE_MODIF_TYPE_HEAL == effect.modifType) {
+		if (amount < 0) {
+			amount *= -1;
 		}
-		else if (RESOURCE_MODIF_TYPE_STEAL == fx.modifType) {
-			// TODO
-		}
-		else if (RESOURCE_MODIF_TYPE_EXPLODE == fx.modifType) {
-			// TODO
-		}
-		else {
-			assert(false && "Unknown RESOURCE_MODIF_TYPE");
-		}
-
-		int before, after;
-		target->AddHP(amount, HEALING_EXTRAINFO_DOES_NOT_REVIVE, &before, &after);
-
-		auto variation = after - before;
-		if (variation != 0) {
-			m_combat->m_eventSystem->PostEvent(Event::MakeModifHP(variation, caster, target));
-		}
-
-		// Check for death
-		if (0 == after && variation < 0) {
-			m_combat->m_eventSystem->PostEvent(Event::MakeDeath(target, caster, -variation));
-		}
-	}break;
-
-	case Resource::MP: {
+	}
+	else if (RESOURCE_MODIF_TYPE_STEAL == effect.modifType) {
 		// TODO
-	}break;
+	}
+	else if (RESOURCE_MODIF_TYPE_EXPLODE == effect.modifType) {
+		// TODO
+	}
+	else {
+		assert(false && "Unknown RESOURCE_MODIF_TYPE");
+	}
 
-	default:
-		break;
+	int before, after;
+	target->AddHP(amount, HEALING_EXTRAINFO_DOES_NOT_REVIVE, &before, &after);
+
+	auto variation = after - before;
+	if (variation != 0) {
+		m_combat->m_eventSystem->PostEvent(Event::MakeModifHP(variation, caster, target));
+	}
+
+	// Check for death
+	if (0 == after && variation < 0) {
+		m_combat->m_eventSystem->PostEvent(Event::MakeDeath(target, caster, -variation));
 	}
 }
