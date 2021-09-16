@@ -46,14 +46,15 @@ static void initialize()
 {
 	Result result;
 
-	s_console = std::make_shared<ConsoleOutput>(&s_eventSystem);
-
 	result = ok(stratutils::Initialize(&s_spellDataBank));
 	assert(result);
 
 	create_spell_data_bank();
 
 	create_entities_and_parties();
+
+	const std::vector<const Party *> parties{ {&s_party1, &s_party2} };
+	s_console = std::make_shared<ConsoleOutput>(&s_eventSystem, parties);
 }
 
 static void quit()

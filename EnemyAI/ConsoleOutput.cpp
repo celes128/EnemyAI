@@ -6,7 +6,12 @@
 #include "Entity.h"
 #include "wincons.h"
 
-ConsoleOutput::ConsoleOutput(EventSystem *eventSystem)
+ConsoleOutput::ConsoleOutput(
+	EventSystem *eventSystem,
+	const std::vector<const Party *> &parties
+)
+	:
+	m_partyStatusFrame(parties)
 {
 	// Make the console listen to all events
 	std::vector<Event::Type> eventTypes(0, Event::Type::Count);// reserve for only one malloc
@@ -33,6 +38,9 @@ void ConsoleOutput::handle_event(const Event &e)
 
 	case T::CombatTurnBegin: {
 		cout << "A new turn starts." << endl;
+
+		m_partyStatusFrame.Update();
+		m_partyStatusFrame.Print();
 	}break;
 
 	case T::CombatTurnEnd: {

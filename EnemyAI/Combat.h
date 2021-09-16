@@ -54,6 +54,8 @@ public:
 
 	bool Over() const;
 
+	const auto *Parties() const { return &m_parties; }
+
 private:
 	void create_all_states();
 	void transition_to_state(COMBATSTATE state);
