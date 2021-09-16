@@ -156,6 +156,7 @@
     <ClCompile Include="Bank.cpp" />
     <ClCompile Include="Combat.cpp" />
     <ClCompile Include="CombatStateBeginTurn.cpp" />
+    <ClCompile Include="CombatStateEndTurn.cpp" />
     <ClCompile Include="CombatStateInitialize.cpp" />
     <ClCompile Include="CombatStateTerminate.cpp" />
     <ClCompile Include="CombatStateTurn.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="Bank.h" />
     <ClInclude Include="Combat.h" />
     <ClInclude Include="CombatStateBeginTurn.h" />
+    <ClInclude Include="CombatStateEndTurn.h" />
     <ClInclude Include="CombatStateInitialize.h" />
     <ClInclude Include="CombatStateTerminate.h" />
     <ClInclude Include="CombatStateTurn.h" />

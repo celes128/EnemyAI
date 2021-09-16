@@ -27,6 +27,7 @@ enum COMBATSTATE {
 	COMBATSTATE_TERMINATE,
 	COMBATSTATE_BEGINTURN,
 	COMBATSTATE_TURN,
+	COMBATSTATE_ENDTURN,
 
 	COMBATSTATE_COUNT	// Number of states
 };
@@ -38,6 +39,7 @@ public:
 	friend class CombatStateTerminate;
 	friend class CombatStateBeginTurn;
 	friend class CombatStateTurn;
+	friend class CombatStateEndTurn;
 
 	Combat(
 		EventSystem *eventSystem,

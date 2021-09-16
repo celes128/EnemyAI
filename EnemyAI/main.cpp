@@ -103,8 +103,8 @@ static void create_entities_and_parties()
 
 	s_entities.push_back(Entity("Warrior", new_entity_id(), 80, ai, spells));
 	s_entities.push_back(Entity("Mage", new_entity_id(), 60, ai, spells));
-	s_entities.push_back(Entity("Skeleton", new_entity_id(), 30, ai, spells));
-	s_entities.push_back(Entity("Wolf", new_entity_id(), 40, ai, spells));
+	s_entities.push_back(Entity("Skeleton", new_entity_id(), 10, ai, spells));
+	s_entities.push_back(Entity("Wolf", new_entity_id(), 4, ai, spells));
 
 	s_party1.push_back(&s_entities[0]);
 	s_party1.push_back(&s_entities[1]);

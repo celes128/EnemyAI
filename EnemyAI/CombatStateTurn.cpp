@@ -22,10 +22,8 @@ void CombatStateTurn::Update()
 
 		process_action(action);
 	}
-	else {
-		// The entire ready list has been cycled through
-		//m_combat->transition_to_state(COMBATSTATE_ENDTURN);
-		m_combat->transition_to_state(COMBATSTATE_TERMINATE);
+	else {// The entire ready list has been cycled through
+		m_combat->transition_to_state(COMBATSTATE_ENDTURN);
 	}
 }
 
@@ -103,10 +101,12 @@ void CombatStateTurn::process_spell(const SpellData &spell, Entity *caster, std:
 {
 	for (auto &effect : spell.effects) {
 		for (auto &target : targets) {
-			m_combat->m_eventSystem->PostEvent(Event::MakeSpellCast(spell.id, caster, target));
-
 			process_spell_effect(effect, caster, target);
 		}
+	}
+
+	for (auto &target : targets) {
+		m_combat->m_eventSystem->PostEvent(Event::MakeSpellCast(spell.id, caster, target));
 	}
 }
 
@@ -155,8 +155,11 @@ void CombatStateTurn::process_spell_effect_resource(const SpellEffect &effect, E
 
 		int before, after;
 		target->AddHP(amount, HEALING_EXTRAINFO_DOES_NOT_REVIVE, &before, &after);
-		
-		m_combat->m_eventSystem->PostEvent(Event::MakeModifHP(after-before, caster, target));
+
+		auto variation = after - before;
+		if (variation != 0) {
+			m_combat->m_eventSystem->PostEvent(Event::MakeModifHP(variation, caster, target));
+		}
 	}break;
 
 	case Resource::MP: {

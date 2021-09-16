@@ -34,6 +34,11 @@ void ConsoleOutput::handle_event(const Event &e)
 		cout << "A new turn starts." << endl;
 	}break;
 
+	case T::CombatTurnEnd: {
+		cout << "The turn has ended." << endl;
+		cout << "----------------------------------------------" << endl;
+	}break;
+
 	case T::ModifHP: {
 		cout << "HP modif from " << e.asModifHP.caster->Name()
 			<< " to " << e.asModifHP.target->Name()

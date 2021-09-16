@@ -6,6 +6,7 @@
 #include "CombatStateTerminate.h"
 #include "CombatStateBeginTurn.h"
 #include "CombatStateTurn.h"
+#include "CombatStateEndTurn.h"
 
 #include "Entity.h"
 #include "EventSystem.h"
@@ -65,6 +66,7 @@ void Combat::create_all_states()
 	m_states[COMBATSTATE_TERMINATE] = new CombatStateTerminate(this);
 	m_states[COMBATSTATE_BEGINTURN] = new CombatStateBeginTurn(this);
 	m_states[COMBATSTATE_TURN] = new CombatStateTurn(this);
+	m_states[COMBATSTATE_ENDTURN] = new CombatStateEndTurn(this);
 }
 
 void Combat::transition_to_state(COMBATSTATE state)

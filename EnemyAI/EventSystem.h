@@ -14,6 +14,7 @@ struct Event {
 		CombatBegin,
 		CombatEnd,
 		CombatTurnBegin,
+		CombatTurnEnd,
 		
 		SpellCast,
 		ModifHP,
@@ -47,31 +48,10 @@ struct Event {
 		AsActionNone	asActionNone;
 	};
 
-	static Event MakeCombatBegin()
-	{
-		Event e;
-		
-		e.type = Type::CombatBegin;
-
-		return e;
-	}
-	static Event MakeCombatEnd()
-	{
-		Event e;
-
-		e.type = Type::CombatEnd;
-
-		return e;
-	}
-
-	static Event MakeCombatTurnBegin()
-	{
-		Event e;
-
-		e.type = Type::CombatTurnBegin;
-
-		return e;
-	}
+	static Event MakeCombatBegin() { return Event(Type::CombatBegin); }
+	static Event MakeCombatEnd() { return Event(Type::CombatEnd); }
+	static Event MakeCombatTurnBegin() { return Event(Type::CombatTurnBegin); }
+	static Event MakeCombatTurnEnd() { return Event(Type::CombatTurnEnd); }
 
 	static Event MakeSpellCast(uint spellId, Entity *caster, Entity *target)
 	{
@@ -110,7 +90,7 @@ struct Event {
 		return e;
 	}
 
-	Event() : type(Type::None) {}
+	Event(Type type = Type::None) : type(type) {}
 };
 
 using EventListenerCallback = void(*)(const Event &e, void *listenerData);
