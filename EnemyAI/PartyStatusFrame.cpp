@@ -26,18 +26,35 @@ void PartyStatusFrame::create_table()
 		{ {TableRowEntry("Name"), TableRowEntry("HP") }}
 		});
 
-	// One row per entity
+	// Create the entity rows
 	for (auto &party : m_parties) {
-		for (auto &entity : *party) {
-			std::string hpStr = std::to_string(entity->HP()) + "/" + std::to_string(entity->MaxHP());
+		for (size_t i = 0; i < party->size(); i++) {
+			const auto &entity = (*party)[i];
 
-			auto color = entity->Alive() ? WinCons::Color::Green : WinCons::Color::Red;
-
-			rows.push_back(
-				TableRow{
-					{ {TableRowEntry(entity->Name(), color), TableRowEntry(hpStr, color) }}
+			// Determine the row color
+			WinCons::Color color;
+			if (entity->Alive()) {
+				auto percent = static_cast<float>(entity->HP()) / static_cast<float>(entity->MaxHP());
+				if (percent > 0.5f) {
+					color = WinCons::Color::Green;
 				}
-			);
+				else {
+					color = WinCons::Color::Orange;
+				}
+			}
+			else {
+				color = WinCons::Color::Red;
+			}
+
+			// Create the row entries
+			TableRowEntry name(entity->Name(), color);
+			TableRowEntry hp(std::to_string(entity->HP()) + "/" + std::to_string(entity->MaxHP()), color);
+
+			// Do not draw an horizontal bar between party members
+			bool printHorizBar = (i + 1 != party->size()) ? false : true;
+
+			// Done!
+			rows.push_back(TableRow{{{name, hp}}, printHorizBar});
 		}
 	}
 	
