@@ -7,6 +7,16 @@
 
 #include "wincons.h"
 
+static size_t num_columns_from_rows(const std::vector<TableRow> &rows)
+{
+	size_t nCols = 0;
+	for (auto &row : rows) {
+		nCols = std::max(nCols, row.NumColumns());
+	}
+
+	return nCols;
+}
+
 Table::Table(
 	const TableLayoutInfo &layout,
 	const std::vector<TableRow> &rows
@@ -14,41 +24,14 @@ Table::Table(
 	:
 	m_layout(layout),
 	m_rows(rows)
-{
-	size_t nCols = 0;
-	for (auto &row : m_rows) {
-		nCols = std::max(nCols, row.entries.size());
-	}
+{	
+	auto nCols = num_columns_from_rows(m_rows);
+	
+	compute_column_infos(nCols);
+	
+	compute_frame_width();
 
-	if (0 == nCols)	return;
-
-	m_columnInfos.reserve(nCols);
-
-	// Determine the width of each column
-	for (size_t col = 0; col < nCols; col++) {
-		int colWidth = 0;
-		
-		for (size_t row = 0; row < m_rows.size(); row++) {
-			if (col >= m_rows[row].NumColumns()) {
-				continue;
-			}
-
-			const auto &entry = m_rows[row].entries[col];
-
-			int entryWidth = m_layout.colLeftPad + entry.text.size() + m_layout.colRightPad;
-
-			colWidth = std::max(colWidth, entryWidth);
-		}
-
-		m_columnInfos.push_back(TableColumnInfo{ colWidth });
-	}
-
-	// Determine the frame width
-	m_frameWidth = 0;
-	for (const auto &info : m_columnInfos) {
-		m_frameWidth += info.width + 1;// + 1 for the vertical separation |
-	}
-	++m_frameWidth;// + 1 for the vertical separation |
+	cache_graphics_strings();
 }
 
 void Table::Print() const
@@ -57,61 +40,124 @@ void Table::Print() const
 		return;
 	}
 
-	// Printing
-	std::cout << std::string(m_frameWidth, '-') << std::endl;
-	for (size_t i = 0; i< m_rows.size(); i++) {
-		print_row(i);
+	// Top horizontal bar of the table frame
+	print_horiz_bar();	
+
+	for (size_t r = 0; r < num_rows(); r++) {
+		print_row(r);
+
+		// The printing of the other horizontal bars is decided
+		// by the row. (flag printHorizBarBelow in the TableRow struct)
+		optional_print_horiz_bar(r);
 	}
 }
 
-void Table::print_row(size_t i) const
+void Table::print_row(size_t r) const
 {
-	assert(i < m_rows.size());
+	assert(r < num_rows());
 
-	const auto &row = m_rows[i];
+	print_entry_vert_bar();
+	for (size_t c = 0; c < num_columns(); c++) {
+		print_entry(c, r);
 
-	const std::string kLeftPadStr(m_layout.colLeftPad, ' ');
-	const std::string kRightPadStr(m_layout.colRightPad, ' ');
-
-	std::cout << "|";
-	for (size_t c = 0; c < m_columnInfos.size(); c++) {
-		if (c < row.NumColumns()) {
-			// Column left padding
-			std::cout << kLeftPadStr;
-
-			// Center the entry text
-			int nBlanks = m_columnInfos[c].width - (m_layout.colLeftPad + m_layout.colRightPad + row.entries[c].text.size());
-			assert(nBlanks >= 0);
-			
-			// Left whitespaces
-			std::cout << std::string(nBlanks / 2, ' ');
-
-			// Entry text
-			const auto &e = row.entries[c];
-			if (e.ignoreTextColor) {
-				std::cout << e.text;
-			}
-			else {
-				WinCons::color_printf(e.textColor, WinCons::DO_NOT_INTENSIFY, "%s", e.text.c_str());
-			}
-
-			// Right whitespaces
-			std::cout << std::string(nBlanks - nBlanks / 2, ' ');
-
-			// Column right padding
-			std::cout << kRightPadStr;
-		}
-		else {
-			// Print an empty entry
-			std::cout << std::string(m_columnInfos[c].width, ' ');
-		}
-
-		std::cout << "|";
+		print_entry_vert_bar();
 	}
 
 	std::cout << std::endl;
+}
 
-	if (row.printHorizBarBelow) {
-		std::cout << std::string(m_frameWidth, '-') << std::endl;
+void Table::compute_column_infos(size_t nCols)
+{
+	m_columnInfos.reserve(nCols);
+
+	// Determine the width of each column
+	for (size_t c = 0; c < nCols; c++) {
+		int columnWidth = 0;
+
+		for (size_t r = 0; r < num_rows(); r++) {
+			const auto &row = m_rows[r];
+
+			if (row.InvalidColumnIndex(c)) {
+				continue;
+			}
+
+			const auto &entry = row.entries[c];
+
+			int entryWidth = m_layout.colLeftPad + entry.text.size() + m_layout.colRightPad;
+
+			columnWidth = std::max(columnWidth, entryWidth);
+		}
+
+		m_columnInfos.push_back(TableColumnInfo{ columnWidth });
+	}
+}
+
+void Table::compute_frame_width()
+{
+	m_frameWidth = 0;
+	for (const auto &info : m_columnInfos) {
+		m_frameWidth += info.width + 1;// + 1 for the vertical separation |
+	}
+	++m_frameWidth;// + 1 for the vertical separation |
+}
+
+void Table::cache_graphics_strings()
+{
+	m_horizBar = std::string(m_frameWidth, '-');
+
+	m_colLeftPadStr = std::string(m_layout.colLeftPad, ' ');
+	m_colRightPadStr = std::string(m_layout.colRightPad, ' ');
+}
+
+void Table::print_horiz_bar() const
+{
+	std::cout << m_horizBar << std::endl;
+}
+
+void Table::optional_print_horiz_bar(size_t r) const
+{
+	if (m_rows[r].printHorizBarBelow) {
+		print_horiz_bar();
+	}
+}
+
+void Table::print_entry_vert_bar() const
+{
+	std::cout << "|";
+}
+
+void Table::print_entry(size_t c, size_t r) const
+{
+	const auto &row = m_rows[r];
+
+	if (row.ValidColumnIndex(c)) {
+		// Column left padding
+		std::cout << m_colLeftPadStr;
+
+		// Center the entry text
+		int nBlanks = m_columnInfos[c].width - (m_layout.colLeftPad + m_layout.colRightPad + row.entries[c].text.size());
+		assert(nBlanks >= 0);
+
+		// Left whitespaces
+		std::cout << std::string(nBlanks / 2, ' ');
+
+		// Entry text
+		const auto &e = row.entries[c];
+		if (e.ignoreTextColor) {
+			std::cout << e.text;
+		}
+		else {
+			WinCons::color_printf(e.textColor, WinCons::DO_NOT_INTENSIFY, "%s", e.text.c_str());
+		}
+
+		// Right whitespaces
+		std::cout << std::string(nBlanks - nBlanks / 2, ' ');
+
+		// Column right padding
+		std::cout << m_colRightPadStr;
+	}
+	else {
+		// Print an empty entry
+		std::cout << std::string(m_columnInfos[c].width, ' ');
 	}
 }

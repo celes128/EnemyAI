@@ -43,6 +43,8 @@ struct TableRow {
 	bool							printHorizBarBelow = true;
 
 	size_t NumColumns() const { return entries.size(); }
+	bool ValidColumnIndex(size_t c) const { return c < NumColumns(); }
+	bool InvalidColumnIndex(size_t c) const { return !ValidColumnIndex(c); }
 };
 
 class Table {
@@ -57,12 +59,26 @@ public:
 private:
 	/*
 		PRECONDITIONS
-		* i < m_rows.size()
+		* r < num_rows()
 	*/
-	void print_row(size_t i) const;
+	void print_row(size_t r) const;
 
 private:
+	// CATEGORY: constructor utils
+	void compute_column_infos(size_t nCols);
+	void compute_frame_width();
+	void cache_graphics_strings();
+
+	// CATEGORY: general utils
 	bool empty() const { return m_columnInfos.size() == 0; }
+	size_t num_columns() const { return m_columnInfos.size(); }
+	size_t num_rows() const { return m_rows.size(); }
+
+	// CATEGORY: print utils
+	void print_horiz_bar() const;
+	void optional_print_horiz_bar(size_t r) const;
+	void print_entry_vert_bar() const;
+	void print_entry(size_t c, size_t r) const;
 
 private:
 	TableLayoutInfo					m_layout;
@@ -71,4 +87,9 @@ private:
 	std::vector<TableColumnInfo>	m_columnInfos;
 
 	int								m_frameWidth;
+
+	// (Cached) Graphics strings
+	std::string						m_horizBar;// separates the rows
+	std::string						m_colLeftPadStr;
+	std::string						m_colRightPadStr;
 };
