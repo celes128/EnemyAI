@@ -115,7 +115,9 @@ void CombatStateTurn::process_spell_effect(const SpellEffect &effect, Entity *ca
 
 	switch (effect.type) {
 	case T::ModifyResource: process_spell_effect_resource(effect.asResource, caster, target); break;
+	case T::Revive: process_spell_effect_revive(effect.asRevive, caster, target); break;
 	case T::None: break;
+	default: assert(false && "Spell effect not handled."); break;
 	}
 }
 
@@ -168,5 +170,16 @@ void CombatStateTurn::process_spell_effect_resource_hp(const SpellEffect::AsReso
 	// Check for death
 	if (0 == after && variation < 0) {
 		m_combat->m_eventSystem->PostEvent(Event::MakeDeath(target, caster, -variation));
+	}
+}
+
+void CombatStateTurn::process_spell_effect_revive(const SpellEffect::AsRevive &effect, Entity *caster, Entity *target)
+{
+	if (target->Dead()) {
+		int hpAmount = static_cast<int>(effect.potency);
+		target->AddHP(hpAmount, HEALING_EXTRAINFO_REVIVE);
+
+		// TODO: post a Life Event
+		// m_combat->m_eventSystem->PostEvent(Event::MakeLife(target, caster, hpAmount));
 	}
 }

@@ -27,6 +27,17 @@ static bool offensive_spell(const SpellData *spell)
 	return false;
 }
 
+static bool revive_spell(const SpellData *spell)
+{
+	for (auto &effect : spell->effects) {
+		if (SpellEffect::Type::Revive == effect.type) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
 Result stratutils::Initialize(Bank<SpellData> *spellbank)
 {
 	s_spellbank = spellbank;
@@ -65,16 +76,28 @@ std::array<int, 4> stratutils::gen_target_types_damage(int smartness)
 	}
 }
 
+std::array<int, 4> stratutils::gen_target_types_revive(int smartness)
+{
+	return gen_target_types_damage(smartness);
+}
+
 Result stratutils::choose_offensive_action(IN int targetType, IN ReadyEntityInfo &rei, OUT Action *action)
 {
 	switch (targetType) {
-	case fTarEntity:
-		return choose_offensive_action_entity(rei, action);
-		break;
+	case fTarEntity: return choose_offensive_action_entity(rei, action); break;
 
-	default:
-		//assert(false && "Unknown target type");
-		break;
+	default: assert(false && "Unknown target type"); break;
+	}
+
+	return kFailure;
+}
+
+Result stratutils::choose_revive_action(IN int targetType, IN ReadyEntityInfo &rei, OUT Action *action)
+{
+	switch (targetType) {
+	case fTarEntity: return choose_revive_action_entity(rei, action); break;
+
+	default: break;
 	}
 
 	return kFailure;
@@ -107,6 +130,43 @@ Result stratutils::choose_offensive_action_entity(IN ReadyEntityInfo &rei, OUT A
 	// Choosing a target
 	Entity *target;
 	result = Query::AnyAliveEntity(IN rei.opponents, OUT &target);
+	if (failed(result)) {
+		return kFailure;
+	}
+	const std::vector<uint> kChosenTargetIds{ {target->Id()} };
+
+	// Success!
+	*action = Action::MakeSpellCast(kChosenSpellId, rei.entity.Id(), kChosenTargetIds);
+	return kSuccess;
+}
+
+Result stratutils::choose_revive_action_entity(IN ReadyEntityInfo &rei, OUT Action *action)
+{
+	Result result;
+
+	// Choosing the spell
+	auto spells = ready_spells(rei.entity);
+
+	spells = filter_spells(
+		spells,
+		[](const SpellData *spell) { return spell->targetingData.Flags(fTarEntity); }
+	);
+
+	spells = filter_spells(
+		spells,
+		[](const SpellData *spell) { return revive_spell(spell); }
+	);
+
+	size_t i;
+	result = Query::RandomElement(IN spells, OUT &i);
+	if (failed(result)) {
+		return kFailure;
+	}
+	const auto kChosenSpellId = spells[i]->id;
+
+	// Choosing a target
+	Entity *target;
+	result = Query::AnyDeadEntity(IN rei.allies, OUT &target);
 	if (failed(result)) {
 		return kFailure;
 	}

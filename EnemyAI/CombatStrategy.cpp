@@ -2,6 +2,7 @@
 
 #include "stratutils.h"
 #include "strat_offensive.h"
+#include "strat_revive.h"
 
 static Bank<SpellData> *s_spellbank;
 
@@ -15,6 +16,7 @@ using StrategyFunc = Result(*)(IN ReadyEntityInfo &rei, OUT Action *action);
 static StrategyFunc s_strategies[STRATEGYNAME_COUNT] =
 {
 	strat_offensive,
+	strat_revive
 };
 
 Result strat::ChooseAction(

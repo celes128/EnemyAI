@@ -54,8 +54,6 @@ void Table::Print() const
 
 void Table::print_row(size_t r) const
 {
-	assert(r < num_rows());
-
 	print_entry_vert_bar();
 	for (size_t c = 0; c < num_columns(); c++) {
 		print_entry(c, r);
@@ -96,9 +94,9 @@ void Table::compute_frame_width()
 {
 	m_frameWidth = 0;
 	for (const auto &info : m_columnInfos) {
-		m_frameWidth += info.width + 1;// + 1 for the vertical separation |
+		m_frameWidth += info.width + 1;// + 1 for the vertical separation character '|'
 	}
-	++m_frameWidth;// + 1 for the vertical separation |
+	++m_frameWidth;// + 1 for the vertical separation character '|'
 }
 
 void Table::cache_graphics_strings()
@@ -135,11 +133,11 @@ void Table::print_entry(size_t c, size_t r) const
 		std::cout << m_colLeftPadStr;
 
 		// Center the entry text
-		int nBlanks = m_columnInfos[c].width - (m_layout.colLeftPad + m_layout.colRightPad + row.entries[c].text.size());
-		assert(nBlanks >= 0);
+		const int kNumBlanks = m_columnInfos[c].width - (m_layout.colLeftPad + m_layout.colRightPad + row.entries[c].text.size());
+		assert(kNumBlanks >= 0);
 
 		// Left whitespaces
-		std::cout << std::string(nBlanks / 2, ' ');
+		std::cout << std::string(kNumBlanks / 2, ' ');
 
 		// Entry text
 		const auto &e = row.entries[c];
@@ -151,7 +149,7 @@ void Table::print_entry(size_t c, size_t r) const
 		}
 
 		// Right whitespaces
-		std::cout << std::string(nBlanks - nBlanks / 2, ' ');
+		std::cout << std::string(kNumBlanks - kNumBlanks / 2, ' ');
 
 		// Column right padding
 		std::cout << m_colRightPadStr;

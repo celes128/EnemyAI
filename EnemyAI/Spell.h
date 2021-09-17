@@ -18,7 +18,8 @@ struct SpellEffect {
 	enum Type {
 		None,
 
-		ModifyResource
+		ModifyResource,		// damage or restore either HP or MP
+		Revive				// raise an entity back to life
 	};
 
 	Type					type;
@@ -30,8 +31,13 @@ struct SpellEffect {
 		RESOURCE_MODIF_TYPE	modifType;
 	};
 
+	struct AsRevive {
+		uint				potency;
+	};
+
 	union {
 		AsResource			asResource;
+		AsRevive			asRevive;
 	};
 
 	static SpellEffect MakeModifyResource(Resource resource, uint potency, RESOURCE_MODIF_TYPE modifType, MagicSchool school = MagicSchool::None)
@@ -44,6 +50,18 @@ struct SpellEffect {
 		fx.asResource.resource = resource;
 		fx.asResource.potency = potency;
 		fx.asResource.modifType = modifType;
+
+		return fx;
+	}
+
+	static SpellEffect MakeRevive(uint potency, MagicSchool school = MagicSchool::None)
+	{
+		SpellEffect fx;
+
+		fx.type = Type::Revive;
+		fx.school = school;
+
+		fx.asRevive.potency = potency;
 
 		return fx;
 	}

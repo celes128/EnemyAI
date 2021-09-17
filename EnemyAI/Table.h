@@ -30,8 +30,8 @@ struct TableRowEntry{
 };
 
 struct TableLayoutInfo {
-	int			colLeftPad;		// left padding in columns
-	int			colRightPad;	// right padding in columns
+	int			colLeftPad;		// left padding in each column
+	int			colRightPad;	// right padding in each column
 };
 
 struct TableColumnInfo {
@@ -58,23 +58,29 @@ public:
 
 private:
 	/*
-		PRECONDITIONS
-		* r < num_rows()
+		In each function below...
+			... 'size_t c' denotes a column index and,
+			... 'size_t r' denotes a row index.
 	*/
-	void print_row(size_t r) const;
 
-private:
+	// -----------------------------
 	// CATEGORY: constructor utils
+	// -----------------------------
 	void compute_column_infos(size_t nCols);
 	void compute_frame_width();
 	void cache_graphics_strings();
 
+	// ------------------------
 	// CATEGORY: general utils
+	// ------------------------
 	bool empty() const { return m_columnInfos.size() == 0; }
 	size_t num_columns() const { return m_columnInfos.size(); }
 	size_t num_rows() const { return m_rows.size(); }
 
+	// ------------------------
 	// CATEGORY: print utils
+	// ------------------------
+	void print_row(size_t r) const;
 	void print_horiz_bar() const;
 	void optional_print_horiz_bar(size_t r) const;
 	void print_entry_vert_bar() const;
@@ -88,7 +94,7 @@ private:
 
 	int								m_frameWidth;
 
-	// (Cached) Graphics strings
+	// Graphics strings
 	std::string						m_horizBar;// separates the rows
 	std::string						m_colLeftPadStr;
 	std::string						m_colRightPadStr;

@@ -29,11 +29,15 @@ struct stratutils {
 	static std::vector<const SpellData *> spell_datas_from_ids(const std::vector<uint> &spellIds);
 
 	static std::array<int, 4> gen_target_types_damage(int smartness);
+	static std::array<int, 4> gen_target_types_revive(int smartness);
 
 	static Result choose_offensive_action(IN int targetType, IN ReadyEntityInfo &rei, OUT Action *action);
+	static Result choose_revive_action(IN int targetType, IN ReadyEntityInfo &rei, OUT Action *action);
 
 	// Try to find a damaging spell that targets one entity
 	static Result choose_offensive_action_entity(IN ReadyEntityInfo &rei, OUT Action *action);
+	// Try to find a revive spell that targets one entity
+	static Result choose_revive_action_entity(IN ReadyEntityInfo &rei, OUT Action *action);
 
 	static std::vector<const SpellData *> ready_spells(Entity &entity);
 

@@ -47,12 +47,13 @@ public:
 	std::vector<uint> ReadySpells() const;
 
 	/*
-		DESCRIPTION
+		AddHP modifies the current HP of the entity.
+
 		If amount > 0 the entity is healed depending on the value of healExtraInfo.
 		If amount < 0 the entity is damaged unless it is already dead.
 
 		The caller can pass pointers to int to obtain the amount of HP before or after 
-		the function adds HP to the entity.
+		the function modifies the entity's HP.
 	*/
 	void AddHP(
 		int amount,
@@ -65,11 +66,6 @@ public:
 
 	void AdvanceAllSpellCooldowns();
 
-	/*
-		PRECONDITIONS
-		* allies != nullptr
-		* opponents != nullptr
-	*/
 	Action ChooseAction(Party &allies, Party &opponents);
 
 private:

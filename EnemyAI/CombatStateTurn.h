@@ -35,6 +35,7 @@ private:
 	void process_spell_effect(const SpellEffect &effect, Entity *caster, Entity *target);
 
 	void process_spell_effect_resource(const SpellEffect::AsResource &effect, Entity *caster, Entity *target);
+	void process_spell_effect_revive(const SpellEffect::AsRevive &effect, Entity *caster, Entity *target);
 
 	/*
 		PRECONDITIONS

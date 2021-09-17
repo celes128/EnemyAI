@@ -175,6 +175,7 @@
     <ClCompile Include="SpellInstance.cpp" />
     <ClCompile Include="stratutils.cpp" />
     <ClCompile Include="strat_offensive.cpp" />
+    <ClCompile Include="strat_revive.cpp" />
     <ClCompile Include="Table.cpp" />
     <ClCompile Include="TargetingData.cpp" />
     <ClCompile Include="utils.cpp" />
@@ -206,6 +207,7 @@
     <ClInclude Include="StrateyName.h" />
     <ClInclude Include="stratutils.h" />
     <ClInclude Include="strat_offensive.h" />
+    <ClInclude Include="strat_revive.h" />
     <ClInclude Include="Table.h" />
     <ClInclude Include="TargetingData.h" />
     <ClInclude Include="utils.h" />
