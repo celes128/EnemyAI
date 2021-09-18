@@ -3,23 +3,20 @@
 #include <iostream>
 #include <vector>
 
+#include "EventSystem.h"
 #include "Entity.h"
 #include "wincons.h"
 
 ConsoleOutput::ConsoleOutput(
 	EventSystem *eventSystem,
+	const Bank<SpellData> *spellDataBank,
 	const std::vector<const Party *> &parties
 )
 	:
+	m_spellDataBank(spellDataBank),
 	m_partyStatusFrame(parties)
 {
-	// Make the console listen to all events
-	std::vector<Event::Type> eventTypes(0, Event::Type::Count);// reserve for only one malloc
-	for (int i = 0; i < Event::Type::Count; i++) {
-		eventTypes.push_back(static_cast<Event::Type>(i));
-	}
-
-	eventSystem->AddListener(EventCallback, this, eventTypes);
+	listen_to_all_events(eventSystem);
 }
 
 void ConsoleOutput::handle_event(const Event &e)
@@ -49,10 +46,15 @@ void ConsoleOutput::handle_event(const Event &e)
 	}break;
 
 	case T::ModifHP: {
-		cout << "HP modif from " << e.asModifHP.caster->Name()
-			<< " to " << e.asModifHP.target->Name()
-			<< " by " << e.asModifHP.amount << " HP."
-			<< endl;
+		cout << e.asModifHP.target->Name() << " loses " << -1 * e.asModifHP.amount << " HP." << endl;
+	}break;
+
+	case T::Life: {
+		WinCons::color_printf(
+			WinCons::Color::Green,
+			WinCons::INTENSIFY,
+			"%s comes back to life (with %d HP).\n",
+			e.asLife.entity->Name().c_str(), e.asLife.hpAmount);
 	}break;
 
 	case T::Death: {
@@ -60,15 +62,19 @@ void ConsoleOutput::handle_event(const Event &e)
 			WinCons::Color::Red,
 			WinCons::INTENSIFY,
 			"%s has killed %s (%d damage).\n",
-			e.asDeath.killer->Name().c_str(), e.asDeath.victim->Name().c_str(), e.asDeath.hpAmount
-		);
+			e.asDeath.killer->Name().c_str(), e.asDeath.victim->Name().c_str(), e.asDeath.hpAmount);
 	}break;
 
 	case T::SpellCast: {
-		cout << "Spell (id=" << e.asSpellCast.spellId << ")"
-			<< " casted by " << e.asSpellCast.caster->Name()
-			<< " towards " << e.asSpellCast.target->Name() << "."
-			<< endl;
+		// Get the spell name
+		std::string spellName;
+		Result result = m_spellDataBank->NameFromId(IN e.asSpellCast.spellId, OUT &spellName);
+
+		if (ok(result)) {
+			cout << e.asSpellCast.caster->Name() << " uses " << spellName
+				<< " against " << e.asSpellCast.target->Name() << "."
+				<< endl;
+		}
 	}break;
 
 	case T::ActionNone: {
@@ -81,6 +87,19 @@ void ConsoleOutput::handle_event(const Event &e)
 		break;
 	}
 }
+
+void ConsoleOutput::listen_to_all_events(EventSystem *eventSystem)
+{
+	// Make the console listen to all events
+	std::vector<Event::Type> eventTypes(0, Event::Type::Count);// reserve for only one malloc
+	for (int i = 0; i < Event::Type::Count; i++) {
+		eventTypes.push_back(static_cast<Event::Type>(i));
+	}
+
+	eventSystem->AddListener(EventCallback, this, eventTypes);
+}
+
+
 
 // Class static event callback function
 void ConsoleOutput::EventCallback(const Event &e, void *listenerData)

@@ -32,7 +32,9 @@ public:
 		auto i = static_cast<uint>(m_items.size() - 1);
 		m_items[i].id = i;
 
+		// Update the two mappings
 		m_mapNamesToIds.insert({ name, i });
+		m_idsToNames.push_back(name);
 
 		if (id) {
 			*id = i;
@@ -48,7 +50,7 @@ public:
 		Returns kSuccess if the id corresponds to an item in the bank else kFailure.
 		In case of success, the function returns the address of the item using the OUT parameter.
 	*/
-	Result Find(IN uint id, OUT const T **item)
+	Result Find(IN uint id, OUT const T **item) const
 	{
 		assert(item);
 
@@ -67,7 +69,7 @@ public:
 		Returns kSuccess if the name corresponds to an item in the bank else kFailure.
 		In case of success, the function returns the address of the item using the OUT parameter.
 	*/
-	Result Find(IN const char *name, OUT const T **item)
+	Result Find(IN const char *name, OUT const T **item) const
 	{
 		assert(item);
 
@@ -87,7 +89,7 @@ public:
 		Returns kSuccess if the name corresponds to an item in the bank else kFailure.
 		In case of success, the function returns the item id using the OUT parameter.
 	*/
-	Result IdFromName(IN const char *name, OUT uint *id)
+	Result IdFromName(IN const char *name, OUT uint *id) const
 	{
 		assert(id);
 
@@ -100,7 +102,27 @@ public:
 		return kFailure;
 	}
 
+	/*
+		PRECONDITIONS
+		* name != nullptr
+		RETURN VALUE
+		Returns kSuccess if the id corresponds to an item in the bank else kFailure.
+		In case of success, the function returns the item name using the OUT parameter.
+	*/
+	Result NameFromId(IN uint id, OUT std::string *name) const
+	{
+		assert(name);
+
+		if (id < m_idsToNames.size()) {
+			*name = m_idsToNames[id];
+			return kSuccess;
+		}
+
+		return kFailure;
+	}
+
 private:
 	std::vector<T>								m_items;
 	std::unordered_map<std::string, uint>		m_mapNamesToIds;
+	std::vector<std::string>					m_idsToNames;
 };

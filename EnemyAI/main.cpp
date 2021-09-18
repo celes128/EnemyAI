@@ -54,7 +54,7 @@ static void initialize()
 
 	create_entities_and_parties();
 
-	create_console_output();	
+	create_console_output();
 }
 
 static void quit()
@@ -175,5 +175,5 @@ static void create_entities_and_parties()
 static void create_console_output()
 {
 	const std::vector<const Party *> parties{ {&s_party1, &s_party2} };
-	s_console = std::make_shared<ConsoleOutput>(&s_eventSystem, parties);
+	s_console = std::make_shared<ConsoleOutput>(&s_eventSystem, &s_spellDataBank, parties);
 }

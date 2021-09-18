@@ -98,14 +98,14 @@ void CombatStateTurn::process_action_none(Action action)
 
 void CombatStateTurn::process_spell(const SpellData &spell, Entity *caster, std::vector<Entity *> &targets)
 {
+	for (auto &target : targets) {
+		m_combat->m_eventSystem->PostEvent(Event::MakeSpellCast(spell.id, caster, target));
+	}
+
 	for (auto &effect : spell.effects) {
 		for (auto &target : targets) {
 			process_spell_effect(effect, caster, target);
 		}
-	}
-
-	for (auto &target : targets) {
-		m_combat->m_eventSystem->PostEvent(Event::MakeSpellCast(spell.id, caster, target));
 	}
 }
 
@@ -179,7 +179,6 @@ void CombatStateTurn::process_spell_effect_revive(const SpellEffect::AsRevive &e
 		int hpAmount = static_cast<int>(effect.potency);
 		target->AddHP(hpAmount, HEALING_EXTRAINFO_REVIVE);
 
-		// TODO: post a Life Event
-		// m_combat->m_eventSystem->PostEvent(Event::MakeLife(target, caster, hpAmount));
+		m_combat->m_eventSystem->PostEvent(Event::MakeLife(target, target->HP()));
 	}
 }
