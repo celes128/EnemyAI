@@ -4,39 +4,58 @@
 #include "Action.h"
 #include "Entity.h"
 #include "Query.h"
+#include "algo.h"
 
 static Bank<SpellData> *s_spellbank;
 
-static bool offensive_spell(const SpellData *spell)
+struct SingleTargetSpell : std::unary_function<const SpellData *, bool>
 {
-	for (auto &effect : spell->effects) {
-		if (SpellEffect::Type::ModifyResource == effect.type) {
-			switch (effect.asResource.modifType) {
-			case RESOURCE_MODIF_TYPE_DAMAGE:
-			case RESOURCE_MODIF_TYPE_STEAL:
-			case RESOURCE_MODIF_TYPE_EXPLODE:
-				return true;
-				break;
+	bool operator()(const SpellData *spell) const
+	{
+		return spell->targetingData.Flags(fTarEntity);
+	}
+};
 
-			default:
-				break;
+struct OffensiveSpell : std::unary_function<const SpellData *, bool>
+{
+	bool operator()(const SpellData *spell) const
+	{
+		for (auto &effect : spell->effects) {
+			if (SpellEffect::Type::ModifyResource == effect.type) {
+				switch (effect.asResource.modifType) {
+				case RESOURCE_MODIF_TYPE_DAMAGE:
+				case RESOURCE_MODIF_TYPE_STEAL:
+				case RESOURCE_MODIF_TYPE_EXPLODE:
+					return true;
+					break;
+
+				default:
+					break;
+				}
 			}
 		}
+
+		return false;
 	}
+};
 
-	return false;
-}
-
-static bool revive_spell(const SpellData *spell)
+struct ReviveSpell : std::unary_function<const SpellData *, bool>
 {
-	for (auto &effect : spell->effects) {
-		if (SpellEffect::Type::Revive == effect.type) {
-			return true;
+	bool operator()(const SpellData *spell) const
+	{
+		for (auto &effect : spell->effects) {
+			if (SpellEffect::Type::Revive == effect.type) {
+				return true;
+			}
 		}
-	}
 
-	return false;
-}
+		return false;
+	}
+};
+
+
+
+
 
 Result stratutils::Initialize(Bank<SpellData> *spellbank)
 {
@@ -108,17 +127,9 @@ Result stratutils::choose_offensive_action_entity(IN ReadyEntityInfo &rei, OUT A
 	Result result;
 
 	// Choosing the spell
-	auto readySpells = ready_spells(rei.entity);
-
-	auto spells = filter_spells(
-		readySpells,
-		[](const SpellData *spell) { return spell->targetingData.Flags(fTarEntity); }
-	);
-
-	spells = filter_spells(
-		spells,
-		[](const SpellData *spell) { return offensive_spell(spell); }
-	);
+	auto spells = ready_spells(rei.entity);
+	filter(spells, SingleTargetSpell());
+	filter(spells, OffensiveSpell());
 
 	size_t i;
 	result = Query::RandomElement(IN spells, OUT &i);
@@ -146,16 +157,8 @@ Result stratutils::choose_revive_action_entity(IN ReadyEntityInfo &rei, OUT Acti
 
 	// Choosing the spell
 	auto spells = ready_spells(rei.entity);
-
-	spells = filter_spells(
-		spells,
-		[](const SpellData *spell) { return spell->targetingData.Flags(fTarEntity); }
-	);
-
-	spells = filter_spells(
-		spells,
-		[](const SpellData *spell) { return revive_spell(spell); }
-	);
+	filter(spells, SingleTargetSpell());
+	filter(spells, ReviveSpell());
 
 	size_t i;
 	result = Query::RandomElement(IN spells, OUT &i);

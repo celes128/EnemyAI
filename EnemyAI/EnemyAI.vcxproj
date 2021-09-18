@@ -183,6 +183,7 @@
   <ItemGroup>
     <ClInclude Include="Action.h" />
     <ClInclude Include="AIData.h" />
+    <ClInclude Include="algo.h" />
     <ClInclude Include="Bank.h" />
     <ClInclude Include="Combat.h" />
     <ClInclude Include="CombatStateBeginTurn.h" />
