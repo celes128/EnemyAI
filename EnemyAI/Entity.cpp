@@ -23,27 +23,16 @@ Entity::Entity(
 
 void Entity::AddHP(int amount, HEALING_EXTRAINFO healExtraInfo, int *before, int *after)
 {
-	if (before) {
+	if (before)
 		*before = m_curHP;
-	}
 
-	if (amount < 0) {// Damage		
-		m_curHP = std::max(0, m_curHP + amount);
-	}
-	else if (amount > 0) {// Heal		
-		bool doHeal = true;
-		if (Dead() && HEALING_EXTRAINFO_DOES_NOT_REVIVE == healExtraInfo) {
-			doHeal = false;
-		}
+	if (amount < 0)
+		damage(-amount);
+	else if (amount > 0)
+		heal(amount, healExtraInfo);
 
-		if (doHeal) {
-			m_curHP = std::min(m_maxHP, m_curHP + amount);
-		}
-	}
-
-	if (after) {
+	if (after)
 		*after = m_curHP;
-	}
 }
 
 void Entity::TriggerSpellCooldown(uint spell, uint cooldown)
@@ -92,6 +81,48 @@ Action Entity::ChooseAction(Party &allies, Party &opponents)
 	return Action::MakeNone(this->Id());
 }
 
+void Entity::damage(int amount)
+{
+	assert(amount > 0);
+
+	if (Alive()) {
+		m_curHP = std::max(0, m_curHP - amount);
+
+		if (Dead()) {
+			on_death();
+		}
+	}
+}
+
+void Entity::heal(int amount, HEALING_EXTRAINFO healExtraInfo)
+{
+	assert(amount > 0);
+
+	const bool wasDead = Dead();
+
+	bool doHeal = true;
+	if (Dead() && HEALING_EXTRAINFO_DOES_NOT_REVIVE == healExtraInfo) {
+		doHeal = false;
+	}
+
+	if (doHeal) {
+		m_curHP = std::min(m_maxHP, m_curHP + amount);
+
+		if (wasDead) {
+			on_revive();
+		}
+	}
+}
+
+void Entity::on_death()
+{
+
+}
+
+void Entity::on_revive()
+{
+
+}
 
 void kill_entity(Entity *entity)
 {

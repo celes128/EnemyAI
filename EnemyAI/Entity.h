@@ -69,6 +69,13 @@ public:
 	Action ChooseAction(Party &allies, Party &opponents);
 
 private:
+	void damage(int amount);
+	void heal(int amount, HEALING_EXTRAINFO healExtraInfo);
+
+	void on_death();
+	void on_revive();
+
+private:
 	std::string					m_name;
 	uint						m_id;
 	

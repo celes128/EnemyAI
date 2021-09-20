@@ -66,7 +66,7 @@ private:
 	// -----------------------------
 	// CATEGORY: constructor utils
 	// -----------------------------
-	void compute_column_infos(size_t nCols);
+	void compute_column_infos();
 	void compute_frame_width();
 	void cache_graphics_strings();
 
@@ -80,11 +80,12 @@ private:
 	// ------------------------
 	// CATEGORY: print utils
 	// ------------------------
-	void print_row(size_t r) const;
-	void print_horiz_bar() const;
-	void optional_print_horiz_bar(size_t r) const;
+	void println_row(size_t r) const;
+	void println_horiz_bar() const;
+	void optional_println_horiz_bar(size_t r) const;
 	void print_entry_vert_bar() const;
 	void print_entry(size_t c, size_t r) const;
+	void println() const;
 
 private:
 	TableLayoutInfo					m_layout;
