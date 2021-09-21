@@ -29,7 +29,7 @@ void Entity::AddHP(int amount, HEALING_EXTRAINFO healExtraInfo, int *before, int
 	if (amount < 0)
 		damage(-amount);
 	else if (amount > 0)
-		heal(amount, healExtraInfo);
+		heal_or_revive(amount, healExtraInfo);
 
 	if (after)
 		*after = m_curHP;
@@ -94,7 +94,7 @@ void Entity::damage(int amount)
 	}
 }
 
-void Entity::heal(int amount, HEALING_EXTRAINFO healExtraInfo)
+void Entity::heal_or_revive(int amount, HEALING_EXTRAINFO healExtraInfo)
 {
 	assert(amount > 0);
 

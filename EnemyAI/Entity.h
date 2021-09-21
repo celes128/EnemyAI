@@ -70,7 +70,7 @@ public:
 
 private:
 	void damage(int amount);
-	void heal(int amount, HEALING_EXTRAINFO healExtraInfo);
+	void heal_or_revive(int amount, HEALING_EXTRAINFO healExtraInfo);
 
 	void on_death();
 	void on_revive();
