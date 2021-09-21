@@ -84,7 +84,14 @@ void Table::compute_column_infos()
 
 int Table::determine_column_width(size_t c)
 {
-	int colWidth = 0;
+	auto w = largest_text_width_in_column(c);
+
+	return m_layout.colLeftPad + w + m_layout.colRightPad;
+}
+
+int Table::largest_text_width_in_column(size_t c)
+{
+	int w = 0;
 
 	for (size_t r = 0; r < num_rows(); r++) {
 		const auto &row = m_rows[r];
@@ -93,16 +100,10 @@ int Table::determine_column_width(size_t c)
 			continue;
 		}
 
-		const auto &entry = row.entries[c];
-
-		int entryWidth = m_layout.colLeftPad + entry.text.size() + m_layout.colRightPad;
-
-		if (entryWidth > colWidth) {
-			colWidth = entryWidth;
-		}
+		w = std::max(w, static_cast<int>(row.entries[c].text.size()));
 	}
 
-	return colWidth;
+	return w;
 }
 
 void Table::compute_frame_width()

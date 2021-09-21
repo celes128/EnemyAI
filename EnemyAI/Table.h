@@ -67,6 +67,8 @@ private:
 	// CATEGORY: constructor utils
 	// -----------------------------
 	void compute_column_infos();
+	int determine_column_width(size_t c);
+	int largest_text_width_in_column(size_t c);
 	void compute_frame_width();
 	void cache_graphics_strings();
 
